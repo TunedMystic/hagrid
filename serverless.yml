@@ -1,0 +1,41 @@
+service: hagrid
+
+
+provider:
+  name: aws
+  runtime: python3.7
+  stage: dev
+  region: us-east-1
+
+
+package:
+  individually: true
+  exclude:
+    - "**/**"
+
+
+functions:
+  uuid:
+    handler: wsgi_handler.handler
+    events:
+      - http: ANY /
+      - http: ANY {proxy+}
+    package:
+      include:
+        - "hagrid/**"
+
+
+plugins:
+  - serverless-python-requirements
+  - serverless-wsgi
+
+
+custom:
+
+  pythonRequirements:
+    slim: true
+    dockerizePip: true
+
+  wsgi:
+    app: hagrid.app.app
+    pythonBin: python3
