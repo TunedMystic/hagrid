@@ -4,8 +4,10 @@ service: hagrid
 provider:
   name: aws
   runtime: python3.7
-  stage: dev
+  stage: dev2
   region: us-east-1
+  environment:
+    DATABASE_HOST: something-here
 
 
 package:
@@ -15,28 +17,29 @@ package:
 
 
 functions:
-  # uuid:
-  #   handler: wsgi_handler.handler
-  #   events:
-  #     - http: ANY /
-  #     - http: ANY {proxy+}
-  #   package:
-  #     include:
-  #       - "hagrid/**"
   uuid:
-    handler: hagrid.handler.get_uuid
+    handler: wsgi_handler.handler
     events:
-      - http:
-          path: /
-          method: get
+      - http: ANY /
+      - http: ANY {proxy+}
     package:
       include:
         - "hagrid/**"
+        - "!**/__pycache__/**"
+  # uuid:
+  #   handler: hagrid.handler.get_uuid
+  #   events:
+  #     - http:
+  #         path: /
+  #         method: get
+  #   package:
+  #     include:
+  #       - "hagrid/**"
 
 
 plugins:
   - serverless-python-requirements
-  # - serverless-wsgi
+  - serverless-wsgi
   - serverless-offline
 
 
@@ -46,6 +49,6 @@ custom:
     slim: true
     dockerizePip: true
 
-  # wsgi:
-  #   app: hagrid.app.app
-  #   pythonBin: python3
+  wsgi:
+    app: hagrid.app.app
+    pythonBin: python3
